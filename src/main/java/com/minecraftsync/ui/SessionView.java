@@ -19,7 +19,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.nio.file.Files;
@@ -50,6 +49,7 @@ public class SessionView extends VBox {
     private final Label state = new Label();
     private final Label lastSync = new Label();
     private final Label message = new Label();
+    private final HBox stateLine = new HBox(7);
     private final CheckBox auto = new CheckBox("Synchronisation automatique");
     private final Button syncButton = new Button("Synchroniser");
     private final Button conflictButton = new Button("Résoudre le conflit");
@@ -65,15 +65,20 @@ public class SessionView extends VBox {
         lastSync.getStyleClass().add("muted");
         message.getStyleClass().add("session-message");
         message.setWrapText(true);
-        HBox stateLine = new HBox(8, dot, state);
+        dot.getStyleClass().add("state-dot");
+        state.getStyleClass().add("state-text");
+        stateLine.getChildren().setAll(dot, state);
         stateLine.setAlignment(Pos.CENTER_LEFT);
+        stateLine.getStyleClass().add("state-pill");
+        stateLine.setMaxWidth(Region.USE_PREF_SIZE);
 
-        VBox info = new VBox(4, name, version, stateLine, lastSync, message);
+        VBox info = new VBox(5, name, version, stateLine, lastSync, message);
         HBox.setHgrow(info, Priority.ALWAYS);
         info.setMinWidth(0);
 
         auto.setOnAction(e -> service.setSyncEnabled(session, auto.isSelected()));
         syncButton.setOnAction(e -> actions.syncNow(session));
+        syncButton.getStyleClass().add("sync-button");
         conflictButton.getStyleClass().add("danger");
         conflictButton.setOnAction(e -> actions.resolveConflict(session));
 
@@ -83,12 +88,14 @@ public class SessionView extends VBox {
         open.setOnAction(e -> actions.openFolder(session));
         MenuItem remove = new MenuItem("Retirer la session…");
         remove.setOnAction(e -> actions.remove(session));
+        remove.getStyleClass().add("menu-danger");
         MenuButton more = new MenuButton("Plus", null, settings, open, new SeparatorMenuItem(), remove);
 
         Region gap = new Region();
         HBox.setHgrow(gap, Priority.ALWAYS);
         HBox actionsRow = new HBox(8, auto, gap, conflictButton, syncButton, more);
         actionsRow.setAlignment(Pos.CENTER_LEFT);
+        actionsRow.getStyleClass().add("card-actions");
 
         HBox top = new HBox(14, icon(session.localPath()), info);
         top.setAlignment(Pos.TOP_LEFT);
@@ -128,7 +135,11 @@ public class SessionView extends VBox {
         boolean syncing = service.isSyncing(session);
         if (syncing) st = SyncState.SYNCING;
         state.setText(st.label());
-        dot.setFill(colorFor(st.styleClass()));
+        String cls = "state-" + st.styleClass();
+        for (String c : new String[]{"state-ok", "state-warn", "state-error", "state-busy", "state-neutral"}) {
+            if (!c.equals(cls)) getStyleClass().remove(c);
+        }
+        if (!getStyleClass().contains(cls)) getStyleClass().add(cls);
 
         String when = session.lastSync() == null ? "jamais"
                 : TimeFormat.relative(session.lastSync())
@@ -147,15 +158,5 @@ public class SessionView extends VBox {
         boolean conflict = st == SyncState.CONFLICT;
         conflictButton.setVisible(conflict);
         conflictButton.setManaged(conflict);
-    }
-
-    private static Color colorFor(String style) {
-        return switch (style) {
-            case "ok" -> Color.web("#2e9d4f");
-            case "warn" -> Color.web("#e0a100");
-            case "error" -> Color.web("#d64541");
-            case "busy" -> Color.web("#2f7fd8");
-            default -> Color.web("#9aa0a6");
-        };
     }
 }

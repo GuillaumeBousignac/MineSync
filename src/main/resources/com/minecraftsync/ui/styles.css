@@ -1,99 +1,373 @@
-/* Minecraft Sync — thème clair sobre */
+/* =====================================================================
+   Minecraft Sync — thèmes clair et sombre
+   Toutes les couleurs passent par des variables (-mc-*) définies sur .root ;
+   le thème sombre (.root.theme-dark) ne fait que les redéfinir.
+   Les variables -fx-* pilotent les contrôles standard de JavaFX (Modena).
+   ===================================================================== */
+
 .root {
+    /* Palette claire */
+    -mc-bg: #f2f4f7;
+    -mc-surface: #ffffff;
+    -mc-surface-2: #f7f8fa;
+    -mc-border: #e2e5ea;
+    -mc-text: #1d2330;
+    -mc-muted: #667085;
+    -mc-header: linear-gradient(to right, #24402b, #2f5a35);
+    -mc-header-text: #ffffff;
+    -mc-header-muted: #c9dccb;
+    -mc-primary: #3c8c40;
+    -mc-primary-hover: #33793a;
+    -mc-primary-text: #ffffff;
+    -mc-danger: #d14343;
+    -mc-danger-hover: #b83636;
+    -mc-ok: #2e9d4f;
+    -mc-ok-bg: #e6f5ea;
+    -mc-warn: #c98a00;
+    -mc-warn-bg: #fff4d6;
+    -mc-error: #d14343;
+    -mc-error-bg: #fdeaea;
+    -mc-busy: #2f7fd8;
+    -mc-busy-bg: #e5f0fc;
+    -mc-neutral: #8a929c;
+    -mc-neutral-bg: #eef0f3;
+    -mc-notice-bg: #fff7e0;
+    -mc-notice-border: #f0d68a;
+    -mc-shadow: rgba(16, 24, 40, 0.07);
+    -mc-shadow-hover: rgba(16, 24, 40, 0.14);
+
+    /* Contrôles JavaFX */
+    -fx-base: #eef0f3;
+    -fx-background: #f2f4f7;
+    -fx-control-inner-background: #ffffff;
+    -fx-control-inner-background-alt: #f7f8fa;
+    -fx-accent: #3c8c40;
+    -fx-focus-color: #3c8c40;
+    -fx-faint-focus-color: #3c8c4022;
+    -fx-selection-bar-non-focused: #d5e8d6;
+    -fx-default-button: #3c8c40;
+
     -fx-font-size: 13px;
-    -fx-background-color: #f4f5f7;
+    -fx-background-color: -mc-bg;
 }
 
+.root.theme-dark {
+    /* Palette sombre */
+    -mc-bg: #15181d;
+    -mc-surface: #1e2228;
+    -mc-surface-2: #252a31;
+    -mc-border: #2f353e;
+    -mc-text: #e7e9ec;
+    -mc-muted: #9aa3ae;
+    -mc-header: linear-gradient(to right, #0f1a12, #17281b);
+    -mc-header-text: #e9f3ea;
+    -mc-header-muted: #8fae94;
+    -mc-primary: #4caf50;
+    -mc-primary-hover: #5cbf61;
+    -mc-primary-text: #0d1a0e;
+    -mc-danger: #e5534b;
+    -mc-danger-hover: #f06a62;
+    -mc-ok: #57c07a;
+    -mc-ok-bg: #1b3324;
+    -mc-warn: #e3b341;
+    -mc-warn-bg: #3a3018;
+    -mc-error: #f0726b;
+    -mc-error-bg: #3d1f1f;
+    -mc-busy: #5aa2f0;
+    -mc-busy-bg: #1a2c42;
+    -mc-neutral: #8b95a1;
+    -mc-neutral-bg: #2a2f37;
+    -mc-notice-bg: #33301f;
+    -mc-notice-border: #5e5428;
+    -mc-shadow: rgba(0, 0, 0, 0.35);
+    -mc-shadow-hover: rgba(0, 0, 0, 0.55);
+
+    -fx-base: #2b3038;
+    -fx-background: #15181d;
+    -fx-control-inner-background: #1e2228;
+    -fx-control-inner-background-alt: #232830;
+    -fx-accent: #4caf50;
+    -fx-focus-color: #4caf50;
+    -fx-faint-focus-color: #4caf5022;
+    -fx-selection-bar-non-focused: #2f4a32;
+    -fx-default-button: #3d8f41;
+}
+
+/* ---------- Texte ---------- */
+.label {
+    -fx-text-fill: -mc-text;
+}
+.muted, .label.muted {
+    -fx-text-fill: -mc-muted;
+}
+
+/* ---------- En-tête ---------- */
 .header {
-    -fx-background-color: #2b3a2f;
-    -fx-padding: 12 18 12 18;
+    -fx-background-color: -mc-header;
+    -fx-padding: 12 18 12 20;
+    -fx-effect: dropshadow(gaussian, -mc-shadow, 8, 0, 0, 2);
 }
 .app-title {
-    -fx-text-fill: white;
-    -fx-font-size: 18px;
+    -fx-text-fill: -mc-header-text;
+    -fx-font-size: 19px;
     -fx-font-weight: bold;
 }
-.header .muted {
-    -fx-text-fill: #cfd8d2;
+.app-subtitle, .header-status {
+    -fx-text-fill: -mc-header-muted;
+    -fx-font-size: 11px;
 }
 .icon-button {
     -fx-background-color: transparent;
+    -fx-text-fill: -mc-text;
     -fx-font-size: 16px;
+    -fx-padding: 4 8 4 8;
+    -fx-background-radius: 6;
     -fx-cursor: hand;
 }
+.icon-button:hover {
+    -fx-background-color: rgba(128, 128, 128, 0.18);
+}
 .header .icon-button {
-    -fx-text-fill: white;
+    -fx-text-fill: -mc-header-text;
+}
+.header .icon-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.14);
+}
+.theme-menu {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-background-radius: 14;
+    -fx-padding: 3 6 3 10;
+    -fx-cursor: hand;
+}
+.theme-menu:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.22);
+}
+.theme-menu > .label {
+    -fx-text-fill: -mc-header-text;
+}
+.theme-menu > .arrow-button > .arrow {
+    -fx-background-color: -mc-header-text;
 }
 
+/* ---------- Bloc Google Drive ---------- */
 .drive-box {
-    -fx-background-color: white;
-    -fx-background-radius: 8;
-    -fx-border-color: #dde1e6;
-    -fx-border-radius: 8;
-    -fx-padding: 10 14 10 14;
+    -fx-background: -mc-surface;
+    -fx-background-color: -mc-surface;
+    -fx-background-radius: 10;
+    -fx-border-color: -mc-border;
+    -fx-border-radius: 10;
+    -fx-padding: 12 14 12 14;
+    -fx-effect: dropshadow(gaussian, -mc-shadow, 6, 0, 0, 1);
+}
+.drive-box.drive-on {
+    -fx-border-color: -mc-border -mc-border -mc-border -mc-ok;
+    -fx-border-width: 1 1 1 4;
+}
+.drive-box.drive-off {
+    -fx-border-color: -mc-border -mc-border -mc-border -mc-neutral;
+    -fx-border-width: 1 1 1 4;
+}
+.drive-box.drive-busy {
+    -fx-border-color: -mc-border -mc-border -mc-border -mc-busy;
+    -fx-border-width: 1 1 1 4;
 }
 .drive-status {
     -fx-font-weight: bold;
+    -fx-text-fill: -mc-text;
 }
 
+/* ---------- Titres de section ---------- */
 .section-title {
     -fx-font-weight: bold;
-    -fx-text-fill: #5b6570;
-    -fx-font-size: 12px;
+    -fx-text-fill: -mc-muted;
+    -fx-font-size: 11px;
+}
+.count-badge {
+    -fx-background-color: -mc-neutral-bg;
+    -fx-background-radius: 10;
+    -fx-text-fill: -mc-muted;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 1 8 1 8;
 }
 
+/* ---------- Liste des sessions ---------- */
 .sessions-scroll, .sessions-scroll > .viewport {
     -fx-background-color: transparent;
     /* -fx-background sert au calcul des couleurs de texte : ne pas le rendre transparent */
-    -fx-background: #f4f5f7;
+    -fx-background: -mc-bg;
+}
+.sessions-scroll {
+    -fx-padding: 0;
+    -fx-background-insets: 0;
 }
 
 .card {
-    -fx-background: white;
-    -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-color: #dde1e6;
-    -fx-border-radius: 10;
-    -fx-padding: 14;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 1);
+    -fx-background: -mc-surface;
+    -fx-background-color: -mc-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -mc-border;
+    -fx-border-radius: 12;
+    -fx-padding: 14 16 12 16;
+    -fx-effect: dropshadow(gaussian, -mc-shadow, 8, 0, 0, 2);
 }
+.card:hover {
+    -fx-effect: dropshadow(gaussian, -mc-shadow-hover, 12, 0, 0, 3);
+}
+/* Liseré coloré selon l'état */
+.card.state-ok      { -fx-border-color: -mc-border -mc-border -mc-border -mc-ok;      -fx-border-width: 1 1 1 4; }
+.card.state-warn    { -fx-border-color: -mc-border -mc-border -mc-border -mc-warn;    -fx-border-width: 1 1 1 4; }
+.card.state-error   { -fx-border-color: -mc-border -mc-border -mc-border -mc-error;   -fx-border-width: 1 1 1 4; }
+.card.state-busy    { -fx-border-color: -mc-border -mc-border -mc-border -mc-busy;    -fx-border-width: 1 1 1 4; }
+.card.state-neutral { -fx-border-color: -mc-border -mc-border -mc-border -mc-neutral; -fx-border-width: 1 1 1 4; }
+
 .session-name {
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
     -fx-font-weight: bold;
+    -fx-text-fill: -mc-text;
 }
 .world-icon {
     -fx-background-color: linear-gradient(to bottom, #6fbf4a 0%, #6fbf4a 30%, #8b5a2b 30%, #8b5a2b 100%);
-    -fx-background-radius: 6;
+    -fx-background-radius: 8;
 }
-.muted {
-    -fx-text-fill: #6b7580;
+
+/* Pastille d'état */
+.state-pill {
+    -fx-background-radius: 12;
+    -fx-padding: 3 10 3 8;
 }
+.state-text {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+.state-ok .state-pill      { -fx-background-color: -mc-ok-bg; }
+.state-warn .state-pill    { -fx-background-color: -mc-warn-bg; }
+.state-error .state-pill   { -fx-background-color: -mc-error-bg; }
+.state-busy .state-pill    { -fx-background-color: -mc-busy-bg; }
+.state-neutral .state-pill { -fx-background-color: -mc-neutral-bg; }
+.state-ok .state-dot       { -fx-fill: -mc-ok; }
+.state-warn .state-dot     { -fx-fill: -mc-warn; }
+.state-error .state-dot    { -fx-fill: -mc-error; }
+.state-busy .state-dot     { -fx-fill: -mc-busy; }
+.state-neutral .state-dot  { -fx-fill: -mc-neutral; }
+.state-ok .state-text      { -fx-text-fill: -mc-ok; }
+.state-warn .state-text    { -fx-text-fill: -mc-warn; }
+.state-error .state-text   { -fx-text-fill: -mc-error; }
+.state-busy .state-text    { -fx-text-fill: -mc-busy; }
+.state-neutral .state-text { -fx-text-fill: -mc-muted; }
+
 .session-message.msg-normal {
-    -fx-text-fill: #4a5560;
+    -fx-text-fill: -mc-muted;
     -fx-font-size: 12px;
 }
-.msg-error {
-    -fx-text-fill: #b3261e;
+.msg-error, .label.msg-error {
+    -fx-text-fill: -mc-error;
     -fx-font-size: 12px;
 }
 
+.card-actions {
+    -fx-border-color: -mc-border transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 10 0 0 0;
+}
+
+/* ---------- Boutons ---------- */
+.button, .menu-button {
+    -fx-background-radius: 7;
+    -fx-cursor: hand;
+}
 .button.primary {
-    -fx-background-color: #3d8b3d;
+    -fx-background-color: -mc-primary;
+    -fx-text-fill: -mc-primary-text;
+    -fx-font-weight: bold;
+    -fx-padding: 6 14 6 14;
+}
+.button.primary:hover {
+    -fx-background-color: -mc-primary-hover;
+}
+.button.danger {
+    -fx-background-color: -mc-danger;
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
-.button.primary:hover {
-    -fx-background-color: #347a34;
+.button.danger:hover {
+    -fx-background-color: -mc-danger-hover;
 }
-.button.danger {
-    -fx-background-color: #d64541;
-    -fx-text-fill: white;
+.menu-item.menu-danger .label {
+    -fx-text-fill: -mc-danger;
 }
 
+/* ---------- Barre du bas ---------- */
+.bottom-bar {
+    -fx-background-color: -mc-surface;
+    -fx-border-color: -mc-border transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 12 18 12 18;
+}
+
+/* ---------- Avis ---------- */
 .notice {
-    -fx-background-color: #fff6db;
-    -fx-border-color: #f0d68a;
+    -fx-background: -mc-notice-bg;
+    -fx-background-color: -mc-notice-bg;
+    -fx-border-color: -mc-notice-border;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 8 10 8 12;
+}
+
+/* ---------- État vide ---------- */
+.empty-state {
+    -fx-background-color: -mc-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -mc-border;
+    -fx-border-style: segments(6, 4);
+    -fx-border-radius: 12;
+    -fx-padding: 32 24 32 24;
+}
+.empty-icon {
+    -fx-font-size: 30px;
+    -fx-text-fill: -mc-muted;
+}
+.empty-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Dialogues ---------- */
+.dialog-pane {
+    -fx-background: -mc-surface;
+    -fx-background-color: -mc-surface;
+}
+.dialog-pane > .header-panel {
+    -fx-background-color: -mc-surface-2;
+    -fx-border-color: transparent transparent -mc-border transparent;
+    -fx-padding: 12 14 12 14;
+}
+.dialog-pane > .header-panel .label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.dialog-pane > .button-bar > .container {
+    -fx-padding: 10 0 0 0;
+}
+
+/* ---------- Champs, listes, infobulles ---------- */
+.text-field, .combo-box, .spinner, .list-view {
     -fx-background-radius: 6;
+}
+.text-input {
+    -fx-prompt-text-fill: -mc-muted;
+}
+.list-view {
+    -fx-border-color: -mc-border;
     -fx-border-radius: 6;
-    -fx-padding: 8 10 8 10;
+    -fx-background-insets: 0;
+}
+.tooltip {
+    -fx-background-color: -mc-surface-2;
+    -fx-text-fill: -mc-text;
+    -fx-background-radius: 6;
+}
+.menu-item:focused .label {
+    -fx-text-fill: white;
 }

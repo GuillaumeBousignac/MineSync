@@ -21,6 +21,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
@@ -54,6 +58,9 @@ public class MainWindow {
     private final Label driveStatus = new Label();
     private final Button driveButton = new Button();
     private final Label minecraftStatus = new Label();
+    private final Label sessionCount = new Label();
+    private final HBox driveBox = new HBox(12);
+    private final Theme theme;
     private final VBox sessionsBox = new VBox(12);
     private final VBox noticeBox = new VBox(6);
     private final Map<String, SessionView> views = new LinkedHashMap<>();
@@ -67,7 +74,9 @@ public class MainWindow {
         this.manager = manager;
         this.worldDetector = worldDetector;
         this.host = host;
+        this.theme = new Theme(service.database());
         build();
+        theme.install();
         service.addListener(new SyncService.Listener() {
             @Override
             public void sessionUpdated(Session session) {
@@ -96,22 +105,35 @@ public class MainWindow {
     private void build() {
         Label title = new Label("Minecraft Sync");
         title.getStyleClass().add("app-title");
+        Label subtitle = new Label("Vos mondes, sur tous vos PC");
+        subtitle.getStyleClass().add("app-subtitle");
+        VBox titles = new VBox(0, title, subtitle);
+
         Button settings = new Button("⚙");
         settings.getStyleClass().add("icon-button");
+        settings.setTooltip(new Tooltip("Réglages"));
         settings.setOnAction(e -> new SettingsView(stage, service, drive, worldDetector).showAndWait());
-        HBox header = new HBox(12, title, spacer(), minecraftStatus, settings);
+        HBox header = new HBox(12, titles, spacer(), minecraftStatus, themeMenu(), settings);
         header.getStyleClass().add("header");
         header.setAlignment(Pos.CENTER_LEFT);
-        minecraftStatus.getStyleClass().add("muted");
+        minecraftStatus.getStyleClass().add("header-status");
 
         driveStatus.getStyleClass().add("drive-status");
+        driveStatus.setWrapText(true);
+        driveStatus.setMinHeight(Region.USE_PREF_SIZE);
+        driveStatus.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(driveStatus, Priority.ALWAYS);
+        driveButton.setMinWidth(Region.USE_PREF_SIZE);
         driveButton.setOnAction(e -> onDriveButton());
-        HBox driveBox = new HBox(12, driveStatus, spacer(), driveButton);
+        driveBox.getChildren().setAll(driveStatus, driveButton);
         driveBox.setAlignment(Pos.CENTER_LEFT);
         driveBox.getStyleClass().add("drive-box");
 
         Label sessionsTitle = new Label("MES SESSIONS");
         sessionsTitle.getStyleClass().add("section-title");
+        sessionCount.getStyleClass().add("count-badge");
+        HBox sessionsHeader = new HBox(8, sessionsTitle, sessionCount);
+        sessionsHeader.setAlignment(Pos.CENTER_LEFT);
 
         ScrollPane scroll = new ScrollPane(sessionsBox);
         scroll.setFitToWidth(true);
@@ -126,14 +148,17 @@ public class MainWindow {
         available.setOnAction(e -> onImportSession());
         HBox actions = new HBox(10, add, available);
         actions.setAlignment(Pos.CENTER);
+        actions.getStyleClass().add("bottom-bar");
 
-        VBox content = new VBox(14, driveBox, noticeBox, sessionsTitle, scroll, actions);
-        content.setPadding(new Insets(18));
+        VBox content = new VBox(14, driveBox, noticeBox, sessionsHeader, scroll);
+        content.setPadding(new Insets(18, 18, 8, 18));
 
         BorderPane root = new BorderPane(content);
         root.setTop(header);
-        Scene scene = new Scene(root, 720, 700);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        root.setBottom(actions);
+        root.getStyleClass().add("main-root");
+        Scene scene = new Scene(root, 760, 720);
+        theme.apply(scene);
         stage.setScene(scene);
         stage.setTitle("Minecraft Sync");
         stage.setMinWidth(560);
@@ -163,6 +188,25 @@ public class MainWindow {
         updateMinecraftStatus();
     }
 
+    /** Menu de choix du thème : Système, Clair, Sombre. */
+    private MenuButton themeMenu() {
+        MenuButton menu = new MenuButton();
+        menu.getStyleClass().add("theme-menu");
+        menu.setTooltip(new Tooltip("Thème de l'interface"));
+        ToggleGroup group = new ToggleGroup();
+        for (Theme.Mode m : Theme.Mode.values()) {
+            RadioMenuItem item = new RadioMenuItem(m.label);
+            item.setToggleGroup(group);
+            item.setSelected(m == theme.mode());
+            item.setOnAction(e -> theme.setMode(m));
+            menu.getItems().add(item);
+        }
+        Runnable label = () -> menu.setText(theme.isDark() ? "☾  Sombre" : "☀  Clair");
+        theme.setOnChange(label);
+        label.run();
+        return menu;
+    }
+
     public void show() {
         stage.show();
     }
@@ -177,11 +221,19 @@ public class MainWindow {
         views.clear();
         sessionsBox.getChildren().clear();
         List<Session> sessions = service.sessions();
+        sessionCount.setText(String.valueOf(sessions.size()));
         if (sessions.isEmpty()) {
-            Label empty = new Label("Aucune session. Ajoutez un monde avec « + Ajouter une session », "
+            Label icon = new Label("⛏");
+            icon.getStyleClass().add("empty-icon");
+            Label title = new Label("Aucune session pour l'instant");
+            title.getStyleClass().add("empty-title");
+            Label text = new Label("Ajoutez un monde avec « + Ajouter une session », "
                     + "ou récupérez un monde déjà envoyé depuis un autre PC.");
-            empty.setWrapText(true);
-            empty.getStyleClass().add("muted");
+            text.setWrapText(true);
+            text.getStyleClass().add("muted");
+            VBox empty = new VBox(6, icon, title, text);
+            empty.setAlignment(Pos.CENTER);
+            empty.getStyleClass().add("empty-state");
             sessionsBox.getChildren().add(empty);
             return;
         }
@@ -234,6 +286,10 @@ public class MainWindow {
     // =====================================================================
 
     private void updateDriveStatus() {
+        driveBox.getStyleClass().removeAll("drive-on", "drive-off", "drive-busy");
+        driveButton.getStyleClass().remove("primary");
+        driveBox.getStyleClass().add(connecting ? "drive-busy" : drive.isConnected() ? "drive-on" : "drive-off");
+        if (!connecting && !drive.isConnected()) driveButton.getStyleClass().add("primary");
         if (connecting) {
             driveStatus.setText("☁ Google Drive : connexion en cours…");
             driveButton.setText("Annuler");
@@ -415,7 +471,7 @@ public class MainWindow {
 
     private void onResolveConflict(Session s) {
         background(() -> service.conflictInfo(s), (SyncResult.ConflictInfo info) ->
-                new ConflictDialog(stage, s, info).showAndWait().ifPresent(res -> service.resolveConflict(s, res)),
+                        new ConflictDialog(stage, s, info).showAndWait().ifPresent(res -> service.resolveConflict(s, res)),
                 err -> showError("Analyse du conflit impossible", err));
     }
 
