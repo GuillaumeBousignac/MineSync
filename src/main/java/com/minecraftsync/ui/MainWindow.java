@@ -21,6 +21,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
@@ -108,12 +110,17 @@ public class MainWindow {
         Label subtitle = new Label("Vos mondes, sur tous vos PC");
         subtitle.getStyleClass().add("app-subtitle");
         VBox titles = new VBox(0, title, subtitle);
+        titles.setAlignment(Pos.CENTER_LEFT);
+        HBox brand = new HBox(12, titles);
+        brand.setAlignment(Pos.CENTER_LEFT);
+        ImageView logo = logo();
+        if (logo != null) brand.getChildren().add(0, logo);
 
         Button settings = new Button("⚙");
         settings.getStyleClass().add("icon-button");
         settings.setTooltip(new Tooltip("Réglages"));
         settings.setOnAction(e -> new SettingsView(stage, service, drive, worldDetector).showAndWait());
-        HBox header = new HBox(12, titles, spacer(), minecraftStatus, themeMenu(), settings);
+        HBox header = new HBox(12, brand, spacer(), minecraftStatus, themeMenu(), settings);
         header.getStyleClass().add("header");
         header.setAlignment(Pos.CENTER_LEFT);
         minecraftStatus.getStyleClass().add("header-status");
@@ -186,6 +193,21 @@ public class MainWindow {
         rebuildSessions();
         updateDriveStatus();
         updateMinecraftStatus();
+    }
+
+    /** Logo de l'application (ressource logo.png), ou null s'il est absent. */
+    private ImageView logo() {
+        var url = getClass().getResource("logo.png");
+        if (url == null) return null;
+        // Chargé en 256 px puis affiché en 40 px : rendu net sur les écrans haute densité
+        Image img = new Image(url.toExternalForm(), 256, 256, true, true);
+        if (img.isError()) return null;
+        ImageView v = new ImageView(img);
+        v.setFitWidth(40);
+        v.setFitHeight(40);
+        v.setPreserveRatio(true);
+        v.setSmooth(true);
+        return v;
     }
 
     /** Menu de choix du thème : Système, Clair, Sombre. */
