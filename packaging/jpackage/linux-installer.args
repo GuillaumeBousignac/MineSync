@@ -1,0 +1,5 @@
+--linux-package-name minesync
+--linux-shortcut
+--linux-menu-group Game
+--linux-app-category games
+--linux-deb-maintainer contact@example.org

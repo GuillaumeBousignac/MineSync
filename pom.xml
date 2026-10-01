@@ -15,6 +15,16 @@
     <maven.compiler.release>25</maven.compiler.release>
     <javafx.version>25</javafx.version>
     <main.class>com.minecraftsync.Main</main.class>
+
+    <!-- Paquet natif (profil « jpackage », voir packaging/README-packaging.md).
+         Valeurs par défaut ; chaque profil de système d'exploitation ci-dessous les ajuste. -->
+    <jpackage.executable>${java.home}/bin/jpackage</jpackage.executable>
+    <jpackage.os>linux</jpackage.os>
+    <jpackage.type>app-image</jpackage.type>
+    <!-- Version numérique uniquement (ex. 1.0.0) : exigé par Windows et macOS -->
+    <jpackage.app.version>1.0.0</jpackage.app.version>
+    <!-- Arguments supplémentaires facultatifs, ex. -Djpackage.extra.args=@packaging/jpackage/linux-installer.args -->
+    <jpackage.extra.args></jpackage.extra.args>
   </properties>
 
   <dependencies>
@@ -126,4 +136,109 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!-- =================================================================
+         Choix automatique du système (aucune option à passer)
+         ================================================================= -->
+    <profile>
+      <id>os-linux</id>
+      <activation><os><name>Linux</name></os></activation>
+      <properties>
+        <jpackage.os>linux</jpackage.os>
+        <jpackage.type>app-image</jpackage.type>
+      </properties>
+    </profile>
+    <profile>
+      <id>os-windows</id>
+      <activation><os><family>windows</family></os></activation>
+      <properties>
+        <jpackage.os>windows</jpackage.os>
+        <jpackage.type>exe</jpackage.type>
+        <jpackage.executable>${java.home}/bin/jpackage.exe</jpackage.executable>
+      </properties>
+    </profile>
+    <profile>
+      <id>os-macos</id>
+      <activation><os><family>mac</family></os></activation>
+      <properties>
+        <jpackage.os>macos</jpackage.os>
+        <jpackage.type>dmg</jpackage.type>
+      </properties>
+    </profile>
+
+    <!-- =================================================================
+         mvn clean verify -Pjpackage
+         package                : JAR autonome (shade, comme d'habitude)
+         pre-integration-test   : copie du JAR dans target/jpackage/input
+         verify                 : jpackage → target/jpackage/output
+         Le paquet est produit pour le système qui exécute la commande.
+         ================================================================= -->
+    <profile>
+      <id>jpackage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>3.4.0</version>
+            <executions>
+              <execution>
+                <id>jpackage-clean</id>
+                <phase>package</phase>
+                <goals><goal>clean</goal></goals>
+                <configuration>
+                  <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                  <filesets>
+                    <fileset><directory>${project.build.directory}/jpackage</directory></fileset>
+                  </filesets>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+              <execution>
+                <id>jpackage-input</id>
+                <phase>pre-integration-test</phase>
+                <goals><goal>copy-resources</goal></goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/jpackage/input</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.directory}</directory>
+                      <includes><include>${project.build.finalName}-all.jar</include></includes>
+                      <filtering>false</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.5.0</version>
+            <executions>
+              <execution>
+                <id>jpackage</id>
+                <phase>verify</phase>
+                <goals><goal>exec</goal></goals>
+                <configuration>
+                  <executable>${jpackage.executable}</executable>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <commandlineArgs>@packaging/jpackage/common.args @packaging/jpackage/${jpackage.os}.args ${jpackage.extra.args} --type ${jpackage.type} --app-version ${jpackage.app.version} --input target/jpackage/input --main-jar ${project.build.finalName}-all.jar --dest target/jpackage/output</commandlineArgs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

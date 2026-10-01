@@ -10,6 +10,7 @@ import com.minecraftsync.sync.ConflictManager;
 import com.minecraftsync.sync.SyncService;
 import com.minecraftsync.util.AppPaths;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class MinecraftSyncApp extends Application {
@@ -31,9 +32,23 @@ public class MinecraftSyncApp extends Application {
         manager = new MinecraftManager(service, detector);
 
         MainWindow window = new MainWindow(stage, service, drive, manager, new WorldDetector(), getHostServices());
+        setWindowIcons(stage);
         window.show();
         manager.start();
         window.connectAtStartup();
+    }
+
+    /**
+     * Icône de la fenêtre et de la barre des tâches (Windows, Linux).
+     * Sous macOS, le Dock utilise l'icône .icns du paquet .app.
+     */
+    private static void setWindowIcons(Stage stage) {
+        var url = MinecraftSyncApp.class.getResource("logo.png");
+        if (url == null) return;
+        for (int size : new int[]{16, 24, 32, 48, 64, 128, 256}) {
+            Image img = new Image(url.toExternalForm(), size, size, true, true);
+            if (!img.isError()) stage.getIcons().add(img);
+        }
     }
 
     @Override

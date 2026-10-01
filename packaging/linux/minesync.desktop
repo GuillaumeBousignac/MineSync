@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=MineSync
+GenericName=Synchronisation de mondes Minecraft
+Comment=Synchronise vos mondes Minecraft via Google Drive
+Exec=@APP_DIR@/bin/MineSync
+Icon=minesync
+Terminal=false
+Categories=Game;Utility;
+Keywords=minecraft;sync;google drive;sauvegarde;

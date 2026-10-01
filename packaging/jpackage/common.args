@@ -1,0 +1,5 @@
+--name MineSync
+--vendor MineSync
+--description "Synchronisation de mondes Minecraft via Google Drive"
+--copyright "MineSync"
+--main-class com.minecraftsync.Main

@@ -1,0 +1,3 @@
+--icon packaging/icons/macos/minesync.icns
+--mac-package-identifier com.minecraftsync.minesync
+--mac-package-name MineSync

@@ -1,0 +1,7 @@
+--icon packaging/icons/windows/minesync.ico
+--win-menu
+--win-menu-group MineSync
+--win-shortcut
+--win-dir-chooser
+--win-per-user-install
+--win-upgrade-uuid 6f3c2a8e-4b1d-4e57-9c0a-2d7e5b9f1a43
